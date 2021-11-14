@@ -1,6 +1,8 @@
 import { lazy, Suspense } from 'react';
 import { useRoutes, Navigate } from 'react-router-dom';
 
+// guards
+import AuthGuard from '../guards/PrivateRoute';
 // 
 import MainLayout from '../layouts/main';
 import AuthLayout from '../layouts/authentication';
@@ -31,7 +33,11 @@ const Router = () => {
         // Dashboard routes
         {
             path: 'dashboard',
-            element: <DashboardLayout />,
+            element: (
+                <AuthGuard>
+                    <DashboardLayout />
+                </AuthGuard>
+            ),
             children: [
                 { path: '', element: <Navigate to="/dashboard/app" replace /> },
                 { path: 'app', element: <GeneralApp /> }

@@ -4,13 +4,26 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
+import DateAdapter from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import { Provider as ReduxProvider } from 'react-redux';
+import { store } from './redux/store';
+
+// contexts
+import { AuthProvider } from './contexts/AuthContext';
 
 ReactDOM.render(
   <React.StrictMode>
     <HelmetProvider>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <ReduxProvider store={store}>
+        <LocalizationProvider dateAdapter={DateAdapter}>
+          <AuthProvider >
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </AuthProvider>
+        </LocalizationProvider>
+      </ReduxProvider>
     </HelmetProvider>
   </React.StrictMode>,
   document.getElementById('root')

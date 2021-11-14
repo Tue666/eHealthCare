@@ -1,26 +1,40 @@
-import { Link as RouterLink, useHistory } from 'react-router-dom';
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import { Link, Stack, FormControlLabel, Checkbox, Alert } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { Formik, Form, FastField } from 'formik';
 
-import useAuth from '../../../hooks/useAuth';
-import { PATH_PAGE } from '../../../routes/path';
+// components
 import { InputField } from '../../custom-field';
-import { loginSchema } from '../../../utils/yupSchema';
+// hooks
+import useAuth from '../../../hooks/useAuth';
+import useSnackbar from '../../../hooks/useSnackbar';
+// utils
+import { patientLoginSchema } from '../../../utils/yupSchema';
+// path
+import { PATH_DASHBOARD } from '../../../routes/path';
 
 const LoginForm = () => {
-    const history = useHistory();
-    const { state } = history.location;
+    const navigate = useNavigate();
     const { login } = useAuth();
+    const { state } = useLocation();
+    const { setSnackbar } = useSnackbar();
     const initalValues = {
-        email: '',
+        code: '',
         password: ''
     };
     const handleSubmit = async (values, { setErrors, resetForm }) => {
         try {
-            await login(values.email, values.password);
-            const path = state?.from ? state.from : PATH_PAGE.home;
-            history.replace(path);
+            const res = await login(values.code, values.password);
+            const path = state?.from ? state.from : PATH_DASHBOARD.app;
+            navigate(path, {
+                replace: true
+            });
+            setSnackbar({
+                isOpen: true,
+                type: 'success',
+                message: `Welcome back, ${res.name}`,
+                anchor: 'top-center'
+            });
         } catch (error) {
             resetForm();
             setErrors({ afterSubmit: error.response.statusText });
@@ -29,17 +43,17 @@ const LoginForm = () => {
     return (
         <Formik
             initialValues={initalValues}
-            validationSchema={loginSchema}
+            validationSchema={patientLoginSchema}
             onSubmit={handleSubmit}
         >
             {({ isSubmitting, errors }) => (
                 <Form>
                     <Stack spacing={3}>
                         <FastField
-                            name='email'
+                            name='code'
                             component={InputField}
                             type='text'
-                            label='Email address'
+                            label='Insurance card number. Example: HS0000000000000'
                             color='success'
                         />
                         <FastField
@@ -51,10 +65,10 @@ const LoginForm = () => {
                         />
                         <Stack direction='row' alignItems='center' justifyContent='space-between'>
                             <FormControlLabel
-                                control={<Checkbox color='error' />}
-                                label="Remember me"
+                                control={<Checkbox />}
+                                label='Remember me'
                             />
-                            <Link color='#f76254' component={RouterLink} variant='subtitle2' to='#'>
+                            <Link component={RouterLink} variant='subtitle2' to='#'>
                                 Forgot password?
                             </Link>
                         </Stack>
@@ -64,8 +78,7 @@ const LoginForm = () => {
                             loading={isSubmitting}
                             type='submit'
                             variant='contained'
-                            color='error'
-                            sx={{ padding: '15px 0', backgroundColor: '#f76254' }}
+                            sx={{ p: 1 }}
                         >
                             LOGIN
                         </LoadingButton>

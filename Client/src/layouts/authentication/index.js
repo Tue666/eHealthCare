@@ -1,4 +1,4 @@
-// import { Link } from 'react-scroll';
+import { Link } from 'react-scroll';
 import { Outlet } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Box, Stack, Button } from '@mui/material';
@@ -22,10 +22,9 @@ const AuthLayout = () => (
             <MoveImage>
                 <Image src="https://www.graphicsprings.com/filestorage/stencils/bdc5649fb67a5ab2fc8b4a0dc0eac951.png?width=500&height=500" alt="" />
             </MoveImage>
-            {/* <Link to='form-wrapper' duration={500}>
-                <Start size='large' variant='contained' color='error' endIcon={<ArrowDownward />}>Let's start</Start>
-            </Link> */}
-            <Start size='large' variant='contained' color='error' endIcon={<ArrowDownward />}>Let's start</Start>
+            <Link to='form-wrapper' duration={500}>
+                <Start size='large' variant='contained' endIcon={<ArrowDownward />}>Let's start</Start>
+            </Link>
         </ImageWrapper>
         <Box sx={{ width: { xs: '100%', lg: '500px' } }} id='form-wrapper'>
             <Outlet />
@@ -114,7 +113,6 @@ const Start = styled(Button)(({ theme }) => ({
     position: 'absolute',
     top: '105%',
     left: '50%',
-    backgroundColor: '#f76254',
     borderRadius: '20px',
     [theme.breakpoints.up('lg')]: {
         display: 'none'

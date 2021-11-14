@@ -1,31 +1,47 @@
-import PropTypes from 'prop-types';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Stack, Alert } from '@mui/material';
-import { LoadingButton } from '@mui/lab';
+import { Stack, Alert, TextField, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
+import { LoadingButton, MobileDateTimePicker } from '@mui/lab';
 import { Formik, Form, FastField } from 'formik';
 
-import useAuth from '../../../hooks/useAuth';
-import { registerSchema } from '../../../utils/yupSchema';
+// components
 import { InputField } from '../../custom-field';
+// hooks
+import useAuth from '../../../hooks/useAuth';
+// utils
+import { patientRegisterSchema } from '../../../utils/yupSchema';
+import { fDate } from '../../../utils/formatTime';
+// path
+import { PATH_AUTH } from '../../../routes/path';
 
-
-const propTypes = {
-    PATH_AUTH: PropTypes.object
-};
-
-const RegisterForm = ({ PATH_AUTH }) => {
-    const navigate = useNavigate();
+const RegisterForm = () => {
     const { register } = useAuth();
+    const navigate = useNavigate();
+    const [dateOfBirth, setDateOfBirth] = useState(new Date());
+    const [insuranceMethod, setInsuranceMethod] = useState(null);
     const initialValues = {
+        code: '',
         name: '',
-        email: '',
+        dateOfBirth: null,
+        address: '',
+        phone: '',
+        familyPhone: '',
         password: '',
         passwordConfirm: ''
     };
     const handleSubmit = async (values, { setErrors, resetForm }) => {
         try {
-            const res = await register(values.name, values.email, values.password, values.passwordConfirm);
-            navigate.replace(PATH_AUTH.login, res);
+            const body = {
+                ...values,
+                dateOfBirth: fDate(dateOfBirth),
+                insuranceID: insuranceMethod,
+                insuranceTime: insuranceMethod ? 30 : null
+            };
+            const res = await register(body);
+            navigate(PATH_AUTH.login, {
+                replace: true,
+                state: res
+            });
         } catch (error) {
             resetForm();
             setErrors({ afterSubmit: error.response.statusText });
@@ -34,47 +50,97 @@ const RegisterForm = ({ PATH_AUTH }) => {
     return (
         <Formik
             initialValues={initialValues}
-            validationSchema={registerSchema}
+            validationSchema={patientRegisterSchema}
             onSubmit={handleSubmit}
         >
             {({ isSubmitting, errors }) => (
                 <Form>
                     <Stack spacing={3}>
                         <FastField
-                            name='name'
+                            name='code'
                             component={InputField}
                             type='text'
-                            label='Your name'
-                            color='success'
+                            label='Insurance card number. Example: HS0000000000000 (*)'
                         />
+                        <Stack
+                            direction='row'
+                            spacing={1}
+                        >
+                            <FastField
+                                name='name'
+                                component={InputField}
+                                type='text'
+                                label='Your name (*)'
+                            />
+                            <MobileDateTimePicker
+                                label='Date of birth'
+                                inputFormat='MM/dd/yyyy'
+                                value={dateOfBirth}
+                                onChange={newValue => {
+                                    setDateOfBirth(newValue);
+                                }}
+                                renderInput={params => <TextField {...params} />}
+                            />
+                        </Stack>
                         <FastField
-                            name='email'
+                            name='address'
                             component={InputField}
                             type='text'
-                            label='Email address'
-                            color='success'
+                            label='Home address (*)'
                         />
+                        <Stack
+                            direction='row'
+                            spacing={1}
+                        >
+                            <FastField
+                                name='phone'
+                                component={InputField}
+                                type='text'
+                                label='Your phone (*)'
+                            />
+                            <FastField
+                                name='familyPhone'
+                                component={InputField}
+                                type='text'
+                                label='Family phone number (*)'
+                            />
+                        </Stack>
                         <FastField
                             name='password'
                             component={InputField}
                             type='password'
-                            label='Pasword'
-                            color='success'
+                            label='Pasword (*)'
                         />
                         <FastField
                             name='passwordConfirm'
                             component={InputField}
                             type='password'
-                            label='Password confirmation'
-                            color='success'
+                            label='Password confirmation (*)'
                         />
+                        <FormLabel>Insurance method (E-Health Care support)</FormLabel>
+                        <RadioGroup
+                            value={insuranceMethod}
+                            onChange={e => setInsuranceMethod(e.target.value)}
+                        >
+                            <FormControlLabel
+                                value={1}
+                                control={<Radio />}
+                                label='Method 1: 100.000 đ/month. When an illness arises, the hospital will pay 50% but not more than 500.000 đ'
+                                sx={{ m: 1 }}
+                            />
+                            <FormControlLabel
+                                value={2}
+                                control={<Radio />}
+                                label='Method 2: 300.000 đ/month. When an illness arises, the hospital will pay 80% but not more than 1.000.000 đ'
+                                sx={{ m: 1 }}
+                            />
+                        </RadioGroup>
                         {errors.afterSubmit && <Alert severity="error">{errors.afterSubmit}</Alert>}
                         <LoadingButton
                             loading={isSubmitting}
                             type='submit'
                             variant='contained'
-                            color='error'
-                            sx={{ padding: '15px 0', backgroundColor: '#f76254' }}
+                            sx={{ p: 1 }}
                         >
                             REGISTER
                         </LoadingButton>
@@ -84,7 +150,5 @@ const RegisterForm = ({ PATH_AUTH }) => {
         </Formik>
     );
 };
-
-RegisterForm.propTypes = propTypes;
 
 export default RegisterForm;

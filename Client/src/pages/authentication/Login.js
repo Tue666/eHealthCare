@@ -5,8 +5,7 @@ import { Link, Stack, Typography } from '@mui/material';
 import Page from '../../components/Page';
 import Logo from '../../components/Logo';
 import AuthSocial from '../../components/authentication/AuthSocial';
-// import { LoginForm } from '../../components/authentication/login';
-
+import { LoginForm } from '../../components/authentication/login';
 // path
 import { PATH_AUTH } from '../../routes/path';
 
@@ -21,7 +20,7 @@ const Login = () => (
         <Logo sx={{ my: 5 }}>Sign in to E-Health Care</Logo>
         <Typography variant='body1'>Enter your details below.</Typography>
         <AuthSocial />
-        {/* <LoginForm /> */}
+        <LoginForm />
     </Page>
 );
 

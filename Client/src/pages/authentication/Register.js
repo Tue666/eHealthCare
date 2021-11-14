@@ -5,8 +5,7 @@ import { Link, Stack, Typography } from '@mui/material';
 import Page from '../../components/Page';
 import Logo from '../../components/Logo';
 import AuthSocial from '../../components/authentication/AuthSocial';
-// import { RegisterForm } from '../../components/authentication/register';
-
+import { RegisterForm } from '../../components/authentication/register';
 // path
 import { PATH_AUTH } from '../../routes/path';
 
@@ -21,7 +20,7 @@ const Register = () => (
         <Logo sx={{ my: 5 }}>Get started absolutely free.</Logo>
         <Typography variant='body1'>Free forever. No credit card needed.</Typography>
         <AuthSocial />
-        {/* <RegisterForm PATH_AUTH={PATH_AUTH} /> */}
+        <RegisterForm PATH_AUTH={PATH_AUTH} />
     </Page>
 );
 
