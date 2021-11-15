@@ -62,7 +62,7 @@ const MenuDesktop = ({ isLanding, isOffset, menuItem }) => {
             <Button
                 variant='contained'
                 target='_blank'
-                href={PATH_DASHBOARD.app}
+                href={PATH_DASHBOARD.services}
             >
                 Get started
             </Button>

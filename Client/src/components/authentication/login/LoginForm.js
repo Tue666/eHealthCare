@@ -25,7 +25,7 @@ const LoginForm = () => {
     const handleSubmit = async (values, { setErrors, resetForm }) => {
         try {
             const res = await login(values.code, values.password);
-            const path = state?.from ? state.from : PATH_DASHBOARD.app;
+            const path = state?.from ? state.from : PATH_DASHBOARD.services;
             navigate(path, {
                 replace: true
             });

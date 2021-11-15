@@ -3,11 +3,12 @@ import { styled } from '@mui/material/styles';
 import { Avatar, Badge } from '@mui/material';
 
 const propTypes = {
+    image: PropTypes.string,
     status: PropTypes.string,
     sx: PropTypes.object
 };
 
-const AvatarBadge = ({ status, sx }) => (
+const AvatarBadge = ({ image = null, status, sx }) => (
     <StatusBadge
         overlap="circular"
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
@@ -16,7 +17,7 @@ const AvatarBadge = ({ status, sx }) => (
         sx={{ ...sx }}
     >
         <Avatar
-            src="http://dotshop69.000webhostapp.com/Public/images/tue.png"
+            src={image ? image : 'http://dotshop69.000webhostapp.com/Public/images/tue.png'}
             alt="Le Chinh Tue"
             sx={{ width: '100%', height: '100%' }}
         />

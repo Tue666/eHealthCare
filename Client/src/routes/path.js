@@ -17,5 +17,5 @@ export const PATH_AUTH = {
 };
 
 export const PATH_DASHBOARD = {
-    app: path(ROOT_DASHBOARD, '/app')
+    services: path(ROOT_DASHBOARD, '/services')
 }

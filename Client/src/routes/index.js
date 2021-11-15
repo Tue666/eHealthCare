@@ -39,8 +39,14 @@ const Router = () => {
                 </AuthGuard>
             ),
             children: [
-                { path: '', element: <Navigate to="/dashboard/app" replace /> },
-                { path: 'app', element: <GeneralApp /> }
+                { path: '', element: <Navigate to='/dashboard/app' replace /> },
+                {
+                    path: 'services',
+                    children: [
+                        { path: '', element: <Services /> },
+                        { path: ':slugDepartment/dpid-:slugDepartmentId', element: <Rooms /> }
+                    ]
+                }
             ]
         },
         // Main routes
@@ -68,4 +74,5 @@ const Login = Loadable(lazy(() => import('../pages/authentication/Login')));
 const Register = Loadable(lazy(() => import('../pages/authentication/Register')));
 
 // Dashboard
-const GeneralApp = Loadable(lazy(() => import('../pages/dashboard/GeneralApp')));
+const Services = Loadable(lazy(() => import('../pages/dashboard/services/Services')));
+const Rooms = Loadable(lazy(() => import('../pages/dashboard/services/Rooms')));

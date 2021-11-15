@@ -13,8 +13,8 @@ const SIDEBAR_CONFIG = [
         subheader: 'General',
         items: [
             {
-                title: 'Dashboard',
-                path: PATH_DASHBOARD.app,
+                title: 'Services',
+                path: PATH_DASHBOARD.services,
                 icon: ICONS.dashboard
             },
         ]
