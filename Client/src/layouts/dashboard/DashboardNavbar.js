@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 import { styled, alpha } from '@mui/material/styles';
 import { Box, Stack, AppBar, Toolbar, IconButton } from '@mui/material';
-import { ListOutlined, ZoomOutMap } from '@mui/icons-material';
+import { ListOutlined, ZoomOutMap, Logout } from '@mui/icons-material';
 
 // components
 import Hidden from '../../components/Hidden';
-import AvatarBadge from '../../components/AvatarBadge';
+// hooks
+import useAuth from '../../hooks/useAuth';
 // 
 import NotificationsPopover from './NotificationsPopover';
 
@@ -18,6 +20,12 @@ const propTypes = {
 };
 
 const DashboardNavbar = ({ onOpenSidebar }) => {
+    const { logout } = useAuth();
+    const navigate = useNavigate();
+    const handleLogout = async () => {
+        await logout();
+        navigate('/auth/login');
+    };
     return (
         <RootStyle>
             <ToolbarStyle>
@@ -36,14 +44,9 @@ const DashboardNavbar = ({ onOpenSidebar }) => {
                         <ZoomOutMap />
                     </IconButton>
                     <NotificationsPopover />
-                    <AvatarBadge
-                        status='online'
-                        sx={{
-                            width: '50px',
-                            height: '50px',
-                            cursor: 'pointer'
-                        }}
-                    />
+                    <IconButton color='error' onClick={handleLogout}>
+                        <Logout />
+                    </IconButton>
                 </Stack>
             </ToolbarStyle>
         </RootStyle>

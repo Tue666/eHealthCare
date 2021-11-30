@@ -2,12 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const Patient = new Schema({
-    code: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    password: {
+    accountId: {
         type: String,
         required: true
     },
@@ -63,10 +58,6 @@ const Patient = new Schema({
     },
     insuranceTime: {
         type: Number,
-        default: null
-    },
-    refreshToken: {
-        type: String,
         default: null
     }
 }, {

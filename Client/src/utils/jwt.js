@@ -18,7 +18,7 @@ const setToken = tokens => {
 
 const isValidToken = async tokens => {
     if (!tokens) return false;
-    return await axiosInstance.get('/patients/verify');
+    return await axiosInstance.get('/accounts/verify');
 };
 
 export { getToken, setToken, isValidToken };

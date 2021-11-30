@@ -1,12 +1,12 @@
 import { combineReducers } from 'redux';
 
 // slices
-import patientReducer from './slices/patient';
+import accountReducer from './slices/account';
 import snackbarReducer from './slices/snackbar';
 import dialogReducer from './slices/dialog';
 
 const rootReducer = combineReducers({
-    patient: patientReducer,
+    account: accountReducer,
     snackbar: snackbarReducer,
     dialog: dialogReducer
 });

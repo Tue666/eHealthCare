@@ -4,7 +4,6 @@ export const patientRegisterSchema = yup.object().shape({
     code: yup
         .string()
         .matches(/^[A-Z][A-Z]\d+$/, 'Area code does not match')
-        .length(15, 'Must be exactly 15 characters')
         .required('This field is required!'),
     name: yup
         .string()
@@ -34,8 +33,6 @@ export const patientRegisterSchema = yup.object().shape({
 export const patientLoginSchema = yup.object().shape({
     code: yup
         .string()
-        .matches(/^[A-Z][A-Z]\d+$/, 'Area code does not match')
-        .length(15, 'Must be exactly 15 characters')
         .required('This field is required!'),
     password: yup
         .string()

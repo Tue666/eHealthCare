@@ -5,12 +5,25 @@ import { Grid, Stack, Typography } from '@mui/material';
 // components
 import ECard from '../../ECard';
 import AvatarBadge from '../../AvatarBadge';
+// hooks
+import useModal from '../../../hooks/useModal';
 
 const propTypes = {
     rooms: PropTypes.array
 };
 
 const RoomList = ({ rooms }) => {
+    const { setModal } = useModal();
+    const handleJoinRoom = doctorId => {
+        setModal({
+            isOpen: true,
+            _id: doctorId,
+            title: 'Join this room?',
+            content: 'Get the number and go to the waiting room after that',
+            type: 'success',
+            caseSubmit: 'save/room'
+        });
+    };
     return (
         <Grid
             container
@@ -28,6 +41,7 @@ const RoomList = ({ rooms }) => {
                                 justifyContent: 'space-between',
                                 cursor: 'pointer'
                             }}
+                            onClick={() => handleJoinRoom(_id)}
                         >
                             <Stack sx={{ width: '70%' }}>
                                 <Typography variant='subtitle2'>{name}</Typography>

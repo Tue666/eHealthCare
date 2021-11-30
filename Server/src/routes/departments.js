@@ -4,7 +4,7 @@ const router = express.Router();
 // controllers
 const departmentsAPI = require('../app/controllers/DepartmentsAPI');
 
-router.post('/', departmentsAPI.addDepartment);
-router.get('/', departmentsAPI.listDepartment);
+router.post('/', departmentsAPI.insertDepartment);
+router.get('/', departmentsAPI.findAll);
 
 module.exports = router;

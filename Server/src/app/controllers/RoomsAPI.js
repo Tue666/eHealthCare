@@ -2,12 +2,14 @@
 const Patient = require('../models/Patient');
 const Doctor = require('../models/Doctor');
 const Room = require('../models/Room');
+const Medicine = require('../models/Medicine');
+const Prescription = require('../models/Prescription');
 // utils
 const { timeToMinutes } = require('../../utils/formatTime');
 
 class RoomsAPI {
     // [GET] /rooms/:slugDepartmentId
-    async listRoom(req, res) {
+    async findAllRoom(req, res) {
         try {
             const { slugDepartmentId } = req.params;
             const now = new Date();
@@ -27,7 +29,7 @@ class RoomsAPI {
                         {
                             $facet: {
                                 patientInRoom: [
-                                    { $match: { doctorId: _id.toString(), status: 'success' } },
+                                    { $match: { doctorId: _id.toString(), status: 'examinating' } },
                                     { $sort: { createdAt: 1 } },
                                     { $limit: 1 }
                                 ],
@@ -63,13 +65,171 @@ class RoomsAPI {
         }
     };
 
+    // [GET] /rooms
+    async findAllPatient(req, res) {
+        const doctor = await Doctor
+            .findOne({ accountId: req.account._id });
+        const rooms = await Room
+            .find({
+                doctorId: doctor._id,
+                status: 'processing'
+            })
+            .sort({ createdAt: 1 });
+        let patients = [];
+        await Promise.all(rooms.map(async room => {
+            const { patientId } = room;
+            const patient = await Patient
+                .findOne({
+                    _id: patientId
+                })
+            patients.push(patient);
+        }));
+        res.json(patients);
+    };
+
+    // [GET] /rooms/examined
+    async findAllExamined(req, res) {
+        try {
+            const { _id } = req.account;
+            const patient = await Patient
+                .findOne({ accountId: _id });
+            const examined = await Room
+                .find({
+                    patientId: patient._id,
+                    status: 'examined'
+                });
+            res.json(examined);
+        } catch (error) {
+            console.log(error);
+        };
+    };
+
+    // [GET] /rooms/examined/:examinedId
+    async findExamined(req, res) {
+        try {
+            const { examinedId } = req.params;
+            const room = await Room
+                .findOne({ _id: examinedId });
+            if (!room) {
+                res.json([]);
+                return;
+            }
+            const doctor = await Doctor
+                .findOne({
+                    _id: room.doctorId
+                });
+            const { code, password, ...doctorInfor } = doctor.toObject();
+            const prescription = await Prescription
+                .find({ _roomId: room._roomId });
+            let result = [];
+            await Promise.all(prescription.map(async p => {
+                const { medicineId } = p;
+                const medicine = await Medicine
+                    .findOne({ _id: medicineId });
+                result.push({
+                    ...p.toObject(),
+                    medicineName: medicine.name
+                });
+            }));
+            res.json({
+                room,
+                doctor: doctorInfor,
+                prescription: result
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    // [GET] /rooms/p
+    async findByPatient(req, res) {
+        try {
+            const patient = await Patient
+                .findOne({ accountId: req.account._id });
+            const room = await Room
+                .findOne({
+                    patientId: patient._id,
+                    status: 'processing'
+                });
+            if (!room) {
+                res.json([]);
+                return;
+            }
+            const doctor = await Doctor
+                .findOne({
+                    _id: room.doctorId
+                });
+            const { code, password, ...doctorInfor } = doctor.toObject();
+            res.json({
+                room,
+                doctor: doctorInfor
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     // [POST] /rooms/join
     async joinRoom(req, res) {
         try {
-            const room = new Room(req.body);
+            const patient = await Patient
+                .findOne({ accountId: req.account._id });
+            const isExaminating = await Room
+                .findOne({
+                    patientId: patient._id,
+                    status: 'processing'
+                });
+            if (isExaminating) {
+                res.json({
+                    status: 'error',
+                    message: 'You are waiting in another room!'
+                });
+                return;
+            }
+            const { doctorId } = req.body;
+            const room = new Room({
+                doctorId,
+                patientId: patient._id
+            });
             await room.save();
             res.json({
-                message: 'Create room successfully!'
+                status: 'success',
+                message: 'Join room successfully!'
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    // [POST] /rooms/diagnosis
+    async diagnosis(req, res) {
+        try {
+            const { _id } = req.account;
+            const { patientId, diagnosis, prescription } = req.body;
+            const doctor = await Doctor
+                .findOne({ accountId: _id });
+            const room = await Room
+                .findOne({
+                    patientId: patientId,
+                    doctorId: doctor._id
+                });
+            await Promise.all(prescription.map(async p => {
+                const { _id, amount, time } = p;
+                const pre = new Prescription({
+                    _roomId: room._roomId,
+                    medicineId: _id,
+                    amount,
+                    time
+                });
+                await pre.save();
+            }));
+            room.diagnosis = diagnosis;
+            room.status = 'examined';
+            room.updatedBy = doctor.name;
+            await room.save();
+            res.json({
+                status: 'success',
+                message: 'Patient examined'
             });
         } catch (error) {
             console.log(error);

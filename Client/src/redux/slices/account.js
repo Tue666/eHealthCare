@@ -1,18 +1,18 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-import patientApi from '../../apis/patientApi';
+import accountApi from '../../apis/accountApi';
 
 const initialState = {
     user: null
 };
 
-export const getProfile = createAsyncThunk('patient/getProfile', async () => {
-    const user = await patientApi.getProfile();
+export const getProfile = createAsyncThunk('account/getProfile', async () => {
+    const user = await accountApi.getProfile();
     return user;
 });
 
 const slice = createSlice({
-    name: 'patient',
+    name: 'account',
     initialState,
     reducers: {
         removeUser: state => {

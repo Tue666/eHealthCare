@@ -12,15 +12,15 @@ const AuthLayout = () => (
         sx={{ p: 6, bgcolor: 'background.default' }}
     >
         <ImageWrapper>
-            <Image src="https://www.pngplay.com/wp-content/uploads/6/E-Commerce-Shopping-PNG-Clipart-Background.png" alt="" />
+            <Image src='https://www.gigadocs.com/blog/wp-content/uploads/2020/05/videocalling-with-therapist_23-2148512091.jpg' alt='' />
             <MoveImage>
-                <Image src="https://images.pngnice.com/download/2007/Shopping-PNG-Photos.png" alt="" />
+                <Image src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEAvNx8pm2xEFwfC4BDyh7vAn6290l4Laz3kaDjPbEgA8Ih2wHnIPIytBsYTQK0asqmxc&usqp=CAU' alt='' />
             </MoveImage>
             <MoveImage>
-                <Image src="https://images.pngnice.com/download/2007/Shopping-PNG-Photos.png" alt="" />
+                <Image src='https://leadscatalyst.com/wp-content/uploads/2019/01/blog7.png' alt='' />
             </MoveImage>
             <MoveImage>
-                <Image src="https://www.graphicsprings.com/filestorage/stencils/bdc5649fb67a5ab2fc8b4a0dc0eac951.png?width=500&height=500" alt="" />
+                <Image src='https://webstockreview.net/images/healthcare-clipart-healthcare-professional-19.png' alt='' />
             </MoveImage>
             <Link to='form-wrapper' duration={500}>
                 <Start size='large' variant='contained' endIcon={<ArrowDownward />}>Let's start</Start>
@@ -33,7 +33,7 @@ const AuthLayout = () => (
 );
 
 const ImageWrapper = styled('div')(({ theme }) => ({
-    width: '400px',
+    width: '450px',
     height: '500px',
     position: 'relative',
     '& div:nth-of-type(1)': {
@@ -65,7 +65,7 @@ const ImageWrapper = styled('div')(({ theme }) => ({
 }));
 
 const MoveImage = styled('div')({
-    width: '150px',
+    width: '130px',
     height: '110px',
     position: 'absolute',
     '@keyframes move-horizontal': {

@@ -22,7 +22,6 @@ const RegisterForm = () => {
     const initialValues = {
         code: '',
         name: '',
-        dateOfBirth: null,
         address: '',
         phone: '',
         familyPhone: '',
@@ -33,6 +32,7 @@ const RegisterForm = () => {
         try {
             const body = {
                 ...values,
+                roleId: 1,
                 dateOfBirth: fDate(dateOfBirth),
                 insuranceID: insuranceMethod,
                 insuranceTime: insuranceMethod ? 30 : null
@@ -60,7 +60,7 @@ const RegisterForm = () => {
                             name='code'
                             component={InputField}
                             type='text'
-                            label='Insurance card number. Example: HS0000000000000 (*)'
+                            label='Serial number. Example: HS0000000000000 (*)'
                         />
                         <Stack
                             direction='row'

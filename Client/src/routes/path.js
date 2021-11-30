@@ -4,6 +4,7 @@ const path = (root, sublink) => {
 
 const ROOT_AUTH = '/auth';
 const ROOT_DASHBOARD = '/dashboard';
+const ROOT_DOCTOR = '/doctor';
 
 export const PATH_PAGE = {
     root: '/',
@@ -17,5 +18,11 @@ export const PATH_AUTH = {
 };
 
 export const PATH_DASHBOARD = {
-    services: path(ROOT_DASHBOARD, '/services')
-}
+    services: path(ROOT_DASHBOARD, '/services'),
+    processing: path(ROOT_DASHBOARD, '/processing'),
+    examined: path(ROOT_DASHBOARD, '/examined')
+};
+
+export const PATH_DOCTOR = {
+    patients: path(ROOT_DOCTOR, '/patients')
+};

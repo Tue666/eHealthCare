@@ -3,36 +3,37 @@ import { createContext, useEffect, useReducer } from 'react';
 import { useDispatch } from 'react-redux';
 
 // apis
-import patientApi from '../apis/patientApi';
+import accountApi from '../apis/accountApi';
 // utils
 import { getToken, setToken, isValidToken } from '../utils/jwt';
 // slices
-import { getProfile } from '../redux/slices/patient';
+import { getProfile, removeUser } from '../redux/slices/account';
 
 const initialState = {
     isInitialized: false,
-    isAuthenticated: false
+    role: null
 };
 
 const handlers = {
     INITIALIZE: (state, action) => {
-        const isAuthenticated = action.payload;
+        const role = action.payload;
         return {
             ...state,
-            isAuthenticated,
-            isInitialized: true
+            isInitialized: true,
+            role
         }
     },
-    LOGIN: (state) => {
+    LOGIN: (state, action) => {
+        const { role } = action.payload;
         return {
             ...state,
-            isAuthenticated: true
+            role
         }
     },
     LOGOUT: (state) => {
         return {
             ...state,
-            isAuthenticated: false
+            role: null
         }
     }
 };
@@ -46,7 +47,8 @@ const propTypes = {
 const AuthContext = createContext({
     ...initialState,
     login: () => Promise.resolve(),
-    register: () => Promise.resolve()
+    register: () => Promise.resolve(),
+    logout: () => Promise.resolve()
 });
 
 const AuthProvider = ({ children }) => {
@@ -57,13 +59,13 @@ const AuthProvider = ({ children }) => {
             try {
                 const tokens = getToken();
                 setToken(tokens);
-                const isAuthenticated = await isValidToken(tokens);
-                if (isAuthenticated) {
+                const res = await isValidToken(tokens);
+                if (res) {
                     await dispatchSlice(getProfile());
                 }
                 dispatch({
                     type: 'INITIALIZE',
-                    payload: isAuthenticated
+                    payload: res.role
                 });
             } catch (error) {
                 console.log(error);
@@ -72,24 +74,33 @@ const AuthProvider = ({ children }) => {
         initialize();
     }, [dispatchSlice]);
     const login = async (code, password) => {
-        const res = await patientApi.login(code, password);
+        const res = await accountApi.login(code, password);
         const { tokens, user } = res;
         setToken(tokens);
         await dispatchSlice(getProfile());
         dispatch({
-            type: 'LOGIN'
+            type: 'LOGIN',
+            payload: user
         });
         return user;
     };
     const register = async body => {
-        return await patientApi.register(body);
+        return await accountApi.register(body);
+    };
+    const logout = async () => {
+        setToken(null);
+        dispatch({
+            type: 'LOGOUT'
+        });
+        dispatchSlice(removeUser());
     };
     return (
         <AuthContext.Provider
             value={{
                 ...state,
                 login,
-                register
+                register,
+                logout
             }}
         >
             {children}

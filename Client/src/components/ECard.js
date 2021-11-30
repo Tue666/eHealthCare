@@ -6,10 +6,11 @@ const propTypes = {
     children: PropTypes.node
 };
 
-const ECard = ({ children, sx }) => {
+const ECard = ({ children, sx, ...other }) => {
     return (
         <StyleCard
             sx={{ p: 3, ...sx }}
+            {...other}
         >
             {children}
         </StyleCard>

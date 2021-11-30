@@ -42,7 +42,7 @@ const Rooms = () => {
     useEffect(() => {
         const getRooms = async () => {
             const departmentId = (pathname.split('/').pop()).split('-').pop();
-            const res = await roomApi.listRoom(departmentId);
+            const res = await roomApi.findAll(departmentId);
             setRooms(res);
         };
         getRooms();
@@ -64,7 +64,7 @@ const Rooms = () => {
                         sx={{ width: '100%', py: 3 }}
                     >
                         <StarRateTwoTone color='warning' sx={{ fontSize: 'xxx-large' }} />
-                        <Typography variant='subtitle1'>No services found. Please come back later</Typography>
+                        <Typography variant='subtitle1'>No doctors found. Please come back later</Typography>
                     </Stack>
                 )}
                 {!rooms && SkeletonLoad}

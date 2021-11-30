@@ -8,23 +8,26 @@ import Logo from '../../components/Logo';
 import Hidden from '../../components/Hidden';
 import NavSection from '../../components/dashboard/NavSection';
 // 
-import SIDEBAR_CONFIG from './SidebarConfig';
+import SIDEBAR_PATIENT_CONFIG from './SidebarPatientConfig';
+import SIDEBAR_DOCTOR_CONFIG from './SidebarDoctorConfig';
 
 const DRAWER_WIDTH = 280;
 
 const propTypes = {
     isOpenSidebar: PropTypes.bool,
-    onCloseSidebar: PropTypes.func
+    onCloseSidebar: PropTypes.func,
+    role: PropTypes.string
 };
 
-const DashboardSidebar = ({ isOpenSidebar, onCloseSidebar }) => {
+const DashboardSidebar = ({ isOpenSidebar, onCloseSidebar, role }) => {
     const renderContent = (
         <>
             <Box sx={{ px: 2.5, py: 5 }}>
                 <Logo>E-Health Care</Logo>
             </Box>
 
-            <NavSection navConfig={SIDEBAR_CONFIG} />
+            {role === 'Patient' && <NavSection navConfig={SIDEBAR_PATIENT_CONFIG} />}
+            {role === 'Doctor' && <NavSection navConfig={SIDEBAR_DOCTOR_CONFIG} />}
 
             <Box sx={{ flexGrow: 1 }} />
 

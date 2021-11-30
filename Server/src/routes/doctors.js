@@ -4,6 +4,6 @@ const router = express.Router();
 // controllers
 const doctorsAPI = require('../app/controllers/DoctorsAPI');
 
-router.post('/', doctorsAPI.addDoctor);
+router.post('/', doctorsAPI.insertDoctor);
 
 module.exports = router;

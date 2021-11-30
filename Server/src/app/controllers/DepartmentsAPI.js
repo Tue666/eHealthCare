@@ -3,7 +3,7 @@ const Department = require('../models/Department');
 
 class PatientsAPI {
     // [GET] /departments
-    async listDepartment(req, res) {
+    async findAll(req, res) {
         try {
             const departments = await Department
                 .find({
@@ -16,7 +16,7 @@ class PatientsAPI {
     };
 
     // [POST] /departments
-    async addDepartment(req, res) {
+    async insertDepartment(req, res) {
         try {
             const department = new Department(req.body);
             await department.save();

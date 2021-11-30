@@ -3,9 +3,6 @@ import { NavLink as RouterLink, useLocation } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Stack, Link, Button } from '@mui/material';
 
-// path
-import { PATH_DASHBOARD } from '../../routes/path';
-
 const MenuDesktopItem = ({ pathname, isLanding, isOffset, item }) => {
     const { label, path } = item;
     const isActive = pathname === path;
@@ -62,7 +59,7 @@ const MenuDesktop = ({ isLanding, isOffset, menuItem }) => {
             <Button
                 variant='contained'
                 target='_blank'
-                href={PATH_DASHBOARD.services}
+                href='/auth/login'
             >
                 Get started
             </Button>

@@ -9,23 +9,49 @@ import {
     Alert
 } from '@mui/material';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
+// apis
+import roomApi from '../apis/roomApi';
+// hooks
 import useModal from '../hooks/useModal';
+import useSnackbar from '../hooks/useSnackbar';
+// path
+import { PATH_DASHBOARD } from '../routes/path';
 
 const Transition = forwardRef((props, ref) => (
     <Slide direction="up" ref={ref} {...props} />
 ));
 
 const Modal = () => {
-    const { isOpen, title, content, type, caseSubmit } = useSelector(state => state.dialog);
+    const { _id, isOpen, title, content, type, caseSubmit } = useSelector(state => state.dialog);
+    const navigate = useNavigate();
     const { setModal } = useModal();
+    const { setSnackbar } = useSnackbar();
     const handleClose = () => {
         setModal();
     };
     const [action, which] = caseSubmit ? caseSubmit.split('/') : [null, null];
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (action && which) {
             switch (action) {
+                case 'save':
+                    {
+                        if (which === 'room') {
+                            const res = await roomApi.joinRoom({
+                                doctorId: _id
+                            });
+                            const { status, message } = res;
+                            status === 'success' && navigate(PATH_DASHBOARD.processing);
+                            setSnackbar({
+                                isOpen: true,
+                                type: status,
+                                message,
+                                anchor: 'bottom-center'
+                            });
+                        }
+                    }
+                    break;
                 default:
                     break;
             }
@@ -50,13 +76,13 @@ const Modal = () => {
                         <Button
                             color={
                                 action === 'save' ? 'success' :
-                                action === 'edit' ? 'warning' :
-                                action === 'remove' ? 'error' :
-                                ''
+                                    action === 'edit' ? 'warning' :
+                                        action === 'remove' ? 'error' :
+                                            ''
                             }
                             onClick={handleSubmit}
                         >
-                            {action}
+                            Ok
                         </Button>
                     </DialogActions>
                 </>

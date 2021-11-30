@@ -11,7 +11,7 @@ import useSnackbar from '../../../hooks/useSnackbar';
 // utils
 import { patientLoginSchema } from '../../../utils/yupSchema';
 // path
-import { PATH_DASHBOARD } from '../../../routes/path';
+import { PATH_DASHBOARD, PATH_DOCTOR } from '../../../routes/path';
 
 const LoginForm = () => {
     const navigate = useNavigate();
@@ -25,7 +25,8 @@ const LoginForm = () => {
     const handleSubmit = async (values, { setErrors, resetForm }) => {
         try {
             const res = await login(values.code, values.password);
-            const path = state?.from ? state.from : PATH_DASHBOARD.services;
+            const middlePath = res.role === 'Doctor' ? PATH_DOCTOR.patients : PATH_DASHBOARD.services;
+            const path = state?.from ? state.from : middlePath;
             navigate(path, {
                 replace: true
             });
@@ -37,6 +38,7 @@ const LoginForm = () => {
             });
         } catch (error) {
             resetForm();
+            console.log(error);
             setErrors({ afterSubmit: error.response.statusText });
         }
     };
@@ -53,7 +55,7 @@ const LoginForm = () => {
                             name='code'
                             component={InputField}
                             type='text'
-                            label='Insurance card number. Example: HS0000000000000'
+                            label='Serial number. Example: HS0000000000000'
                             color='success'
                         />
                         <FastField
