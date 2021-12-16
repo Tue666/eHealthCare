@@ -15,7 +15,7 @@ const slice = createSlice({
     name: 'account',
     initialState,
     reducers: {
-        removeUser: state => {
+        removeAccount: state => {
             state.user = null
         }
     },
@@ -27,7 +27,7 @@ const slice = createSlice({
 });
 
 export const {
-    removeUser
+    removeAccount
 } = slice.actions;
 
 export default slice.reducer;

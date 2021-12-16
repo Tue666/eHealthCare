@@ -12,7 +12,7 @@ const Medicine = new Schema({
         min: 0
     },
     price: {
-        type: String,
+        type: Number,
         required: true
     }
 }, {

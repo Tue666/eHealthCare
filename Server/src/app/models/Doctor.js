@@ -14,22 +14,6 @@ const Doctor = new Schema({
         type: String,
         default: ''
     },
-    name: {
-        type: String,
-        required: true,
-        default: '',
-    },
-    address: {
-        type: String,
-        required: true,
-        default: '',
-    },
-    phone: {
-        type: String,
-        maxlength: 10,
-        required: true,
-        default: ''
-    },
     dutyDay: {
         type: Array,
         required: []

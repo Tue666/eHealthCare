@@ -1,13 +1,16 @@
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { styled, alpha } from '@mui/material/styles';
-import { Box, Stack, AppBar, Toolbar, IconButton } from '@mui/material';
+import { Box, Stack, AppBar, Toolbar, IconButton, Alert } from '@mui/material';
 import { ListOutlined, ZoomOutMap, Logout } from '@mui/icons-material';
+import { useConfirm } from 'material-ui-confirm';
 
 // components
 import Hidden from '../../components/Hidden';
 // hooks
 import useAuth from '../../hooks/useAuth';
+// path
+import { PATH_AUTH } from '../../routes/path';
 // 
 import NotificationsPopover from './NotificationsPopover';
 
@@ -20,11 +23,23 @@ const propTypes = {
 };
 
 const DashboardNavbar = ({ onOpenSidebar }) => {
+    const confirm = useConfirm();
     const { logout } = useAuth();
     const navigate = useNavigate();
     const handleLogout = async () => {
-        await logout();
-        navigate('/auth/login');
+        try {
+            await confirm({
+                title: 'Are you sure you wanna logout?',
+                content: <Alert severity='error'>You need to re-login next time</Alert>,
+                confirmationButtonProps: {
+                    color: 'error'
+                }
+            });
+            await logout();
+            navigate(PATH_AUTH.login);
+        } catch (error) {
+
+        }
     };
     return (
         <RootStyle>

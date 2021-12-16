@@ -6,25 +6,9 @@ const Patient = new Schema({
         type: String,
         required: true
     },
-    name: {
-        type: String,
-        required: true,
-        default: '',
-    },
     dateOfBirth: {
         type: String,
         required: true
-    },
-    address: {
-        type: String,
-        required: true,
-        default: '',
-    },
-    phone: {
-        type: String,
-        maxlength: 10,
-        required: true,
-        default: ''
     },
     familyPhone: {
         type: String,

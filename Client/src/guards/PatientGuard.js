@@ -5,11 +5,12 @@ import useAuth from "../hooks/useAuth";
 // path
 import { PATH_AUTH } from '../routes/path';
 
+const allowed = ['Patient'];
+
 const PatientGuard = ({ children }) => {
-    const roles = ['Patient'];
     const { role } = useAuth();
     const { pathname } = useLocation();
-    return roles.includes(role)
+    return allowed.includes(role)
         ? <>{children}</>
         : <Navigate
             to={PATH_AUTH.login}

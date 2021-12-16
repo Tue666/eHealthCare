@@ -3,7 +3,6 @@ import ThemeConfig from './theme';
 
 // components
 import Snackbar from './components/Snackbar';
-import Modal from './components/Modal';
 // hooks
 import useAuth from './hooks/useAuth';
 // pages
@@ -14,7 +13,6 @@ const App = () => {
   return (
     <ThemeConfig>
       <Snackbar />
-      <Modal />
       {isInitialized ? <Router /> : <Loading />}
     </ThemeConfig>
   );

@@ -1,50 +1,52 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import MaterialTable from '@material-table/core';
 import { Container, Stack, Typography, IconButton, Chip } from '@mui/material';
 import { Visibility } from '@mui/icons-material';
-import { DataGrid } from '@mui/x-data-grid';
 
 // apis
 import roomApi from '../../../apis/roomApi';
 // components
 import Page from '../../../components/Page';
+// utils
+import { fDateUS } from '../../../utils/formatTime';
 
 const columns = [
     {
         field: 'diagnosis',
-        headerName: 'Diagnosis',
-        flex: 1
-    },
-    {
-        field: 'status',
-        headerName: 'Status',
-        flex: 1,
-        renderCell: params => (
-            <Chip color='primary' label={params.row.status} />
-        )
+        title: 'Diagnosis',
+        width: '30%'
     },
     {
         field: 'updatedBy',
-        headerName: 'Updated By',
-        flex: 1
+        title: 'Updated By',
+        width: '18%'
     },
     {
         field: 'createdAt',
-        headerName: 'Created At',
-        flex: 1
+        title: 'Created At',
+        width: '30%',
+        render: row => <Typography variant='subtitle2'>{fDateUS(row.createdAt)}</Typography>
+    },
+    {
+        field: 'status',
+        title: 'Status',
+        width: '12%',
+        render: row => (
+            <Chip color='primary' label={row.status} />
+        )
     },
     {
         field: 'actions',
-        headerName: 'Actions',
-        flex: 1,
+        title: 'Actions',
         sortable: false,
-        renderCell: params => (
+        render: row => (
             <Stack
                 direction='row'
                 alignItems='center'
                 spacing={1}
             >
-                <Link to={`/dashboard/examined/${params.row._id}`}>
+                <Link to={`/dashboard/examined/${row._id}`}>
                     <IconButton>
                         <Visibility />
                     </IconButton>
@@ -53,6 +55,11 @@ const columns = [
         )
     }
 ];
+
+const options = {
+    addRowPosition: 'first',
+    actionsColumnIndex: -1
+};
 
 const Examined = () => {
     const [examined, setExamined] = useState(null);
@@ -68,15 +75,11 @@ const Examined = () => {
             <Container>
                 <Typography variant='h6' sx={{ mb: 3 }}>Examined</Typography>
                 {examined && (
-                    <DataGrid
-                        autoHeight
-                        autoPageSize
-                        rows={examined}
+                    <MaterialTable
+                        title='Examined'
                         columns={columns}
-                        pageSize={5}
-                        rowsPerPageOptions={[5]}
-                        disableSelectionOnClick
-                        getRowId={row => row._id}
+                        data={examined}
+                        options={options}
                     />
                 )}
             </Container>

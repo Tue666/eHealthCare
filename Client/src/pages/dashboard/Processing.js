@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Container, Grid, Typography } from '@mui/material';
+import { Container, Stack, Grid, Typography } from '@mui/material';
+import { StarRateTwoTone } from '@mui/icons-material';
 
 // apis
 import roomApi from '../../apis/roomApi';
@@ -36,7 +37,16 @@ const Processing = () => {
                         </Grid>
                     </Grid>
                 )}
-                {room && Object.keys(room).length === 0 && 'Nothing here...'}
+                {room && Object.keys(room).length === 0 && (
+                    <Stack
+                        alignItems='center'
+                        spacing={1}
+                        sx={{ width: '100%', py: 3 }}
+                    >
+                        <StarRateTwoTone color='warning' sx={{ fontSize: 'xxx-large' }} />
+                        <Typography variant='subtitle1'>No examination found. Please come back later</Typography>
+                    </Stack>
+                )}
             </Container>
         </Page>
     );

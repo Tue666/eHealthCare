@@ -7,7 +7,7 @@ import accountApi from '../apis/accountApi';
 // utils
 import { getToken, setToken, isValidToken } from '../utils/jwt';
 // slices
-import { getProfile, removeUser } from '../redux/slices/account';
+import { getProfile, removeAccount } from '../redux/slices/account';
 
 const initialState = {
     isInitialized: false,
@@ -24,16 +24,10 @@ const handlers = {
         }
     },
     LOGIN: (state, action) => {
-        const { role } = action.payload;
+        const role = action.payload;
         return {
             ...state,
             role
-        }
-    },
-    LOGOUT: (state) => {
-        return {
-            ...state,
-            role: null
         }
     }
 };
@@ -59,13 +53,13 @@ const AuthProvider = ({ children }) => {
             try {
                 const tokens = getToken();
                 setToken(tokens);
-                const res = await isValidToken(tokens);
-                if (res) {
+                const role = await isValidToken(tokens);
+                if (role) {
                     await dispatchSlice(getProfile());
                 }
                 dispatch({
                     type: 'INITIALIZE',
-                    payload: res.role
+                    payload: role
                 });
             } catch (error) {
                 console.log(error);
@@ -75,24 +69,21 @@ const AuthProvider = ({ children }) => {
     }, [dispatchSlice]);
     const login = async (code, password) => {
         const res = await accountApi.login(code, password);
-        const { tokens, user } = res;
+        const { tokens, account } = res;
         setToken(tokens);
-        await dispatchSlice(getProfile());
+        account && await dispatchSlice(getProfile());
         dispatch({
             type: 'LOGIN',
-            payload: user
+            payload: account.role
         });
-        return user;
+        return account;
     };
     const register = async body => {
         return await accountApi.register(body);
     };
     const logout = async () => {
         setToken(null);
-        dispatch({
-            type: 'LOGOUT'
-        });
-        dispatchSlice(removeUser());
+        dispatchSlice(removeAccount());
     };
     return (
         <AuthContext.Provider

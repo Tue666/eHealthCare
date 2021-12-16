@@ -32,7 +32,7 @@ const RegisterForm = () => {
         try {
             const body = {
                 ...values,
-                roleId: 1,
+                role: "Patient",
                 dateOfBirth: fDate(dateOfBirth),
                 insuranceID: insuranceMethod,
                 insuranceTime: insuranceMethod ? 30 : null

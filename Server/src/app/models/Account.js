@@ -11,10 +11,23 @@ const Account = new Schema({
         type: String,
         required: true
     },
-    roleId: {
-        type: Number,
+    name: {
+        type: String,
+        required: true
+    },
+    address: {
+        type: String,
+        required: true
+    },
+    phone: {
+        type: String,
+        maxlength: 10,
+        required: true
+    },
+    role: {
+        type: String,
         required: true,
-        default: 1
+        default: 'Patient'
     },
     refreshToken: {
         type: String,

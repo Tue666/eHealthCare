@@ -3,6 +3,9 @@ import { NavLink as RouterLink, useLocation, matchPath } from 'react-router-dom'
 import { styled, alpha, useTheme } from '@mui/material/styles';
 import { Box, List, ListSubheader, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 
+// hooks
+import useAuth from '../../hooks/useAuth';
+
 const NavItem = ({ item, active }) => {
     const theme = useTheme();
     const { title, path, icon } = item;
@@ -69,6 +72,7 @@ NavItem.propTypes = {
 // -----------------------------------------------------------------------
 
 const NavSection = ({ navConfig }) => {
+    const { role } = useAuth();
     const { pathname } = useLocation();
     const match = path => {
         return path
@@ -77,14 +81,21 @@ const NavSection = ({ navConfig }) => {
     };
     return (
         <Box>
-            {navConfig.map(list => (
-                <List key={list.subheader} disablePadding>
-                    <ListSubheaderStyle>{list.subheader}</ListSubheaderStyle>
-                    {list.items.map(item => (
-                        <NavItem key={item.title} item={item} active={match} />
-                    ))}
-                </List>
-            ))}
+            {navConfig.map(list => {
+                const { subheader, menus } = list;
+                let navItems = [];
+                const items = menus.filter(menu => menu.roles.includes(role))
+                    .map(filtered => filtered.items);
+                items.map(item => navItems.push(...item));
+                return (
+                    <List key={subheader} disablePadding>
+                        {navItems.length > 0 && <ListSubheaderStyle>{subheader}</ListSubheaderStyle>}
+                        {navItems.map(item => (
+                            <NavItem key={item.title} item={item} active={match} />
+                        ))}
+                    </List>
+                )
+            })}
         </Box>
     );
 };

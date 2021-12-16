@@ -1,5 +1,9 @@
 import PropTypes from 'prop-types';
-import { DataGrid } from '@mui/x-data-grid';
+import MaterialTable from '@material-table/core';
+import { Typography } from '@mui/material';
+
+// utils
+import { toVND } from '../../../utils/formatMoney';
 
 const propTypes = {
     prescription: PropTypes.array.isRequired
@@ -8,33 +12,35 @@ const propTypes = {
 const columns = [
     {
         field: 'medicineName',
-        headerName: 'Medicine Name',
-        flex: 3
+        title: 'Medicine Name'
     },
     {
         field: 'amount',
-        headerName: 'Amount',
-        flex: 1
+        title: 'Amount'
     },
     {
         field: 'time',
-        headerName: 'Time',
-        flex: 1
+        title: 'Time'
+    },
+    {
+        field: 'medicinePrice',
+        title: 'Medicine Price',
+        render: row => <Typography variant='subtitle2'>{toVND(row.medicinePrice)}</Typography>
     }
 ];
 
+const options = {
+    addRowPosition: 'first',
+    actionsColumnIndex: -1
+};
+
 const Prescription = ({ prescription }) => {
-    console.log(prescription);
     return (
-        <DataGrid
-            autoHeight
-            autoPageSize
-            rows={prescription}
+        <MaterialTable
+            title='Medicines'
             columns={columns}
-            pageSize={5}
-            rowsPerPageOptions={[5]}
-            disableSelectionOnClick
-            getRowId={row => row._id}
+            data={prescription}
+            options={options}
         />
     );
 };

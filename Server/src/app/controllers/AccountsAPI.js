@@ -4,33 +4,23 @@ const bcrypt = require('bcrypt');
 const Account = require('../models/Account');
 const Patient = require('../models/Patient');
 const Doctor = require('../models/Doctor');
-const Role = require('../models/Role');
 // utils
 const { generateToken } = require('../../utils/jwt');
 
 class AccountsAPI {
-    // [GET] /accounts/verify
-    async verify(req, res) {
-        const role = await Role
-            .findOne({ _roleId: req.account.roleId });
-        res.json({
-            role: role.roleText
-        });
-    };
-
     // [GET] /accounts/profile
     async getProfile(req, res) {
-        const { _id, roleId } = req.account;
+        const { _id, role } = req.account;
         try {
             let profile = {};
-            switch (roleId) {
-                case 1:
+            switch (role) {
+                case 'Patient':
                     {
                         profile = await Patient
                             .findOne({ accountId: _id });
                     }
                     break;
-                case 2:
+                case 'Doctor':
                     {
                         profile = await Doctor
                             .findOne({ accountId: _id });
@@ -47,12 +37,6 @@ class AccountsAPI {
 
     // [POST] /accounts/login
     async login(req, res) {
-        const areFilled = Object.values(req.body).every(field => field !== '');
-        if (!areFilled) {
-            res.statusMessage = 'Fill all the fields, please!';
-            res.status(400).end();
-            return;
-        }
         try {
             const { code, password } = req.body;
             const account = await Account
@@ -68,36 +52,15 @@ class AccountsAPI {
                 res.status(400).end();
                 return;
             }
-            const { _id, roleId } = account;
-            const tokens = generateToken({ _id, roleId });
+            const { _id, name, role } = account;
+            const tokens = generateToken({ _id, role });
             account.refreshToken = tokens.refreshToken;
             await account.save();
-            let name = '';
-            switch (roleId) {
-                case 1:
-                    {
-                        const patient = await Patient
-                            .findOne({ accountId: _id });
-                        name = patient.name
-                    }
-                    break;
-                case 2:
-                    {
-                        const doctor = await Doctor
-                            .findOne({ accountId: _id });
-                        name = doctor.name
-                    }
-                    break;
-                default:
-                    break;
-            }
-            const role = await Role
-                .findOne({ _roleId: roleId });
             res.json({
                 tokens,
-                user: {
+                account: {
                     name,
-                    role: role.roleText
+                    role
                 }
             });
         } catch (error) {
@@ -107,14 +70,8 @@ class AccountsAPI {
 
     // [POST] /accounts/register
     async register(req, res) {
-        const areFilled = Object.values(req.body).every(field => field !== '');
-        if (!areFilled) {
-            res.statusMessage = 'Fill all the fields, please!';
-            res.status(400).end();
-            return;
-        }
         try {
-            const { code, password, passwordConfirm, roleId, ...accountInfor } = req.body;
+            const { code, password, passwordConfirm, name, address, phone, role, ...accountInfor } = req.body;
             const accountExisted = await Account
                 .findOne({ code: code });
             if (accountExisted) {
@@ -132,17 +89,29 @@ class AccountsAPI {
             const account = new Account({
                 code,
                 password: hashedPassword,
-                roleId
+                name,
+                address,
+                phone,
+                role
             });
             await account.save();
-            switch (roleId) {
-                case 1:
+            switch (role) {
+                case 'Patient':
                     {
                         const patient = new Patient({
                             accountId: account._id.toString(),
                             ...accountInfor
                         });
                         await patient.save();
+                    }
+                    break;
+                case 'Doctor':
+                    {
+                        const doctor = new Doctor({
+                            accountId: account._id.toString(),
+                            ...accountInfor
+                        });
+                        await doctor.save();
                     }
                     break;
                 default:
@@ -166,8 +135,8 @@ class AccountsAPI {
                     refreshToken
                 });
             if (!account) return res.sendStatus(403);
-            const { _id, roleId } = account;
-            const tokens = generateToken({ _id, roleId });
+            const { _id, role } = account;
+            const tokens = generateToken({ _id, role });
             account.refreshToken = tokens.refreshToken;
             await account.save();
             res.json(tokens);

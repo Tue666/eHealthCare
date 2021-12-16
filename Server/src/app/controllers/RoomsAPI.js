@@ -1,4 +1,5 @@
 // models
+const Account = require('../models/Account');
 const Patient = require('../models/Patient');
 const Doctor = require('../models/Doctor');
 const Room = require('../models/Room');
@@ -8,10 +9,10 @@ const Prescription = require('../models/Prescription');
 const { timeToMinutes } = require('../../utils/formatTime');
 
 class RoomsAPI {
-    // [GET] /rooms/:slugDepartmentId
+    // [GET] /rooms/:departmentId
     async findAllRoom(req, res) {
         try {
-            const { slugDepartmentId } = req.params;
+            const { departmentId } = req.params;
             const now = new Date();
             const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             const day = days[now.getDay()];
@@ -19,11 +20,11 @@ class RoomsAPI {
             let result = [];
             const doctors = await Doctor
                 .find({
-                    departmentId: slugDepartmentId,
+                    departmentId: departmentId,
                     dutyDay: day
                 });
             await Promise.all(doctors.map(async _doctor => {
-                const { _id, dutyFrom, dutyTo } = _doctor;
+                const { _id, accountId, image, dutyDay, dutyFrom, dutyTo } = _doctor;
                 if (currentMinutes >= timeToMinutes(dutyFrom) && currentMinutes <= timeToMinutes(dutyTo)) {
                     const query = await Room.aggregate([
                         {
@@ -45,15 +46,26 @@ class RoomsAPI {
                             }
                         }
                     ]);
-                    const { code, password, ...doctor } = _doctor.toObject();
                     const { patientInRoom, queue } = query[0];
                     const patientId = patientInRoom[0] ? patientInRoom[0].patientId : null;
                     const patient = await Patient
                         .findOne({
                             _id: patientId
                         });
+                    const account = await Account
+                        .findOne({
+                            _id: accountId
+                        });
                     result.push({
-                        doctor,
+                        doctor: {
+                            name: account.name,
+                            phone: account.phone,
+                            _id,
+                            image,
+                            dutyDay,
+                            dutyFrom,
+                            dutyTo
+                        },
                         currentPatient: patient ? patient.name : null,
                         inQueue: queue[0] ? queue[0].count : 0
                     });
@@ -81,8 +93,17 @@ class RoomsAPI {
             const patient = await Patient
                 .findOne({
                     _id: patientId
-                })
-            patients.push(patient);
+                });
+            const accountPatient = await Account
+                .findOne({
+                    _id: patient.accountId
+                });
+            patients.push({
+                patientId: patient._id,
+                name: accountPatient.name,
+                phone: accountPatient.phone,
+                address: accountPatient.address
+            });
         }));
         res.json(patients);
     };
@@ -118,7 +139,8 @@ class RoomsAPI {
                 .findOne({
                     _id: room.doctorId
                 });
-            const { code, password, ...doctorInfor } = doctor.toObject();
+            const account = await Account
+                .findOne({ _id: doctor.accountId });
             const prescription = await Prescription
                 .find({ _roomId: room._roomId });
             let result = [];
@@ -128,12 +150,21 @@ class RoomsAPI {
                     .findOne({ _id: medicineId });
                 result.push({
                     ...p.toObject(),
-                    medicineName: medicine.name
+                    medicineName: medicine.name,
+                    medicinePrice: medicine.price
                 });
             }));
             res.json({
                 room,
-                doctor: doctorInfor,
+                doctor: {
+                    name: account.name,
+                    phone: account.phone,
+                    address: account.address,
+                    image: doctor.image,
+                    dutyDay: doctor.dutyDay,
+                    dutyFrom: doctor.dutyFrom,
+                    dutyTo: doctor.dutyTo
+                },
                 prescription: result
             });
         } catch (error) {
@@ -159,10 +190,21 @@ class RoomsAPI {
                 .findOne({
                     _id: room.doctorId
                 });
-            const { code, password, ...doctorInfor } = doctor.toObject();
+            const accountDoctor = await Account
+                .findOne({
+                    _id: doctor.accountId
+                });
             res.json({
                 room,
-                doctor: doctorInfor
+                doctor: {
+                    name: accountDoctor.name,
+                    phone: accountDoctor.phone,
+                    address: accountDoctor.address,
+                    image: doctor.image,
+                    dutyDay: doctor.dutyDay,
+                    dutyFrom: doctor.dutyFrom,
+                    dutyTo: doctor.dutyTo
+                }
             });
         } catch (error) {
             console.log(error);
@@ -204,10 +246,11 @@ class RoomsAPI {
     // [POST] /rooms/diagnosis
     async diagnosis(req, res) {
         try {
-            const { _id } = req.account;
             const { patientId, diagnosis, prescription } = req.body;
             const doctor = await Doctor
-                .findOne({ accountId: _id });
+                .findOne({ accountId: req.account._id });
+            const account = await Account
+                .findOne({ _id: doctor.accountId });
             const room = await Room
                 .findOne({
                     patientId: patientId,
@@ -225,7 +268,7 @@ class RoomsAPI {
             }));
             room.diagnosis = diagnosis;
             room.status = 'examined';
-            room.updatedBy = doctor.name;
+            room.updatedBy = account.name;
             await room.save();
             res.json({
                 status: 'success',

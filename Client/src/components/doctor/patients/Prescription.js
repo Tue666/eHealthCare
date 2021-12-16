@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import MaterialTable from '@material-table/core';
 import { Stack, TextField, Button, Typography } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
 
 // apis
 import roomApi from '../../../apis/roomApi';
@@ -14,15 +14,19 @@ import { PATH_DOCTOR } from '../../../routes/path';
 const columns = [
     {
         field: 'name',
-        headerName: 'Medicine name',
-        flex: 1
+        title: 'Medicine name'
     },
     {
         field: 'quantity',
-        headerName: 'Quantity left',
-        flex: 1
+        title: 'Quantity left'
     }
 ];
+
+const options = {
+    selection: true,
+    addRowPosition: 'first',
+    actionsColumnIndex: -1
+};
 
 const propTypes = {
     medicines: PropTypes.array,
@@ -67,41 +71,54 @@ const Prescription = ({ medicines, patientId }) => {
                 value={diagnosis}
                 onChange={e => setDiagnosis(e.target.value)}
             />
-            <DataGrid
-                autoHeight
-                autoPageSize
-                rows={medicines}
+            <MaterialTable
+                title='Medicines'
                 columns={columns}
-                pageSize={5}
-                rowsPerPageOptions={[5]}
-                checkboxSelection
-                disableSelectionOnClick
-                getRowId={row => row._id}
-                onSelectionModelChange={ids => {
-                    const selectedRows = prescription.filter(p => ids.includes(p.medicineId));
-                    const unSelectedRows = medicines.filter(row => ids.includes(row._id) && !selectedRows.some(s => s.medicineId === row._id));
-                    unSelectedRows.map(u => selectedRows.push({
+                data={medicines}
+                options={options}
+                onSelectionChange={selectedRows => {
+                    const ids = selectedRows.map(row => row._id);
+                    const newPrescription = prescription.filter(p => ids.includes(p._id));
+                    const unGetRows = medicines.filter(row => ids.includes(row._id) && !newPrescription.some(s => s._id === row._id));
+                    unGetRows.map(u => newPrescription.push({
                         ...u,
                         amount: '',
                         time: ''
                     }));
-                    setPrescription(selectedRows);
+                    setPrescription(newPrescription);
                 }}
             />
-            <>
+            <Stack
+                spacing={5}
+            >
                 {prescription.map(item => (
-                    <Stack
-                        key={item._id}
-                        direction='row'
-                        alignItems='center'
-                        spacing={2}
-                    >
+                    <Stack key={item._id}>
                         <Typography variant='subtitle2'>{item.name}</Typography>
-                        <TextField label='Amount' variant='standard' value={item.amount} onChange={e => handleChangeAmount(e, item._id)} />
-                        <TextField label='Time' variant='standard' value={item.time} onChange={e => handleChangeTime(e, item._id)} />
+                        <Stack
+                            direction='row'
+                            alignItems='center'
+                            spacing={2}
+                        >
+                            <TextField
+                                size='small'
+                                fullWidth
+                                label='Amount'
+                                variant='standard'
+                                value={item.amount}
+                                onChange={e => handleChangeAmount(e, item._id)}
+                            />
+                            <TextField
+                                size='small'
+                                fullWidth
+                                label='Time'
+                                variant='standard'
+                                value={item.time}
+                                onChange={e => handleChangeTime(e, item._id)}
+                            />
+                        </Stack>
                     </Stack>
                 ))}
-            </>
+            </Stack>
             <Button variant='contained' onClick={handleSubmit}>Save</Button>
         </Stack>
     );

@@ -34,10 +34,10 @@ const Patient = () => {
                     container
                     spacing={4}
                 >
-                    <Grid item md={6} sm={12}>
+                    <Grid item md={7} sm={12}>
                         {medicines && <Prescription medicines={medicines} patientId={pathname.split('/').pop()} />}
                     </Grid>
-                    <Grid item md={6} sm={12}>
+                    <Grid item md={5} sm={12}>
                         <PatientInfor patientId={pathname.split('/').pop()} />
                     </Grid>
                 </Grid>

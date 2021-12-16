@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
@@ -9,11 +8,7 @@ import DashboardSidebar from './DashboardSidebar';
 const APP_BAR_MOBILE = 64;
 const APP_BAR_DESKTOP = 92;
 
-const propTypes = {
-    role: PropTypes.string
-};
-
-const DashboardLayout = ({ role = 'Patient' }) => {
+const DashboardLayout = () => {
     const [open, setOpen] = useState(false);
     return (
         <RootStyle>
@@ -21,7 +16,6 @@ const DashboardLayout = ({ role = 'Patient' }) => {
             <DashboardSidebar
                 isOpenSidebar={open}
                 onCloseSidebar={() => setOpen(false)}
-                role={role}
             />
             <MainStyle>
                 <Outlet />
@@ -48,7 +42,5 @@ const MainStyle = styled('div')(({ theme }) => ({
         paddingRight: theme.spacing(2)
     }
 }));
-
-DashboardLayout.propTypes = propTypes;
 
 export default DashboardLayout;

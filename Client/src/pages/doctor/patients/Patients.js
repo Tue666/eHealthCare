@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import MaterialTable from '@material-table/core';
 import { Container, Stack, Typography, IconButton } from '@mui/material';
 import { Visibility } from '@mui/icons-material';
-import { DataGrid } from '@mui/x-data-grid';
 
 // apis
 import roomApi from '../../../apis/roomApi';
@@ -12,31 +12,26 @@ import Page from '../../../components/Page';
 const columns = [
     {
         field: 'name',
-        headerName: 'Name',
-        flex: 1
+        title: 'Name'
     },
     {
         field: 'phone',
-        headerName: 'Phone',
-        flex: 1
+        title: 'Phone',
     },
     {
         field: 'address',
-        headerName: 'Address',
-        flex: 1
+        title: 'Address',
     },
     {
         field: 'actions',
-        headerName: 'Actions',
-        flex: 1,
-        sortable: false,
-        renderCell: params => (
+        title: 'Actions',
+        render: row => (
             <Stack
                 direction='row'
                 alignItems='center'
                 spacing={1}
             >
-                <Link to={`/doctor/patients/${params.row._id}`}>
+                <Link to={`/doctor/patients/${row.patientId}`}>
                     <IconButton>
                         <Visibility />
                     </IconButton>
@@ -45,6 +40,12 @@ const columns = [
         )
     }
 ];
+
+const options = {
+    selection: true,
+    addRowPosition: 'first',
+    actionsColumnIndex: -1
+};
 
 const Patients = () => {
     const [patients, setPatients] = useState(null);
@@ -60,15 +61,11 @@ const Patients = () => {
             <Container>
                 <Typography variant='h6' sx={{ mb: 3 }}>Patients waiting</Typography>
                 {patients && (
-                    <DataGrid
-                        autoHeight
-                        autoPageSize
-                        rows={patients}
+                    <MaterialTable
+                        title='Patients'
                         columns={columns}
-                        pageSize={5}
-                        rowsPerPageOptions={[5]}
-                        disableSelectionOnClick
-                        getRowId={row => row._id}
+                        data={patients}
+                        options={options}
                     />
                 )}
                 {!patients && 'Loading...'}

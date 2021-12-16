@@ -23,16 +23,26 @@ const ERROR = {
     contrastText: '#FFF'
 };
 
+const WARNING = {
+    lighter: '#FFE79E',
+    light: '#FFDD78',
+    main: '#EDDE62',
+    dark: '#DFBD57',
+    darker: '#C7A540',
+    contrastText: '#fff'
+};
+
 const COMMON = {
     primary: { ...PRIMARY },
     secondary: { ...SECONDARY },
-    error: { ...ERROR }
+    error: { ...ERROR },
+    warning: { ...WARNING }
 };
 
 const palette = {
     light: {
         ...COMMON,
-        background: { paper: '#F5F8Fa', default: '#FFF' }
+        background: { paper: '#FFF', default: '#FFF' }
     },
     dark: {
         ...COMMON,

@@ -1,28 +1,47 @@
-import { Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Stack, Typography } from '@mui/material';
+import { Fragment } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Grid, Stack, Typography, Alert } from '@mui/material';
+import { useConfirm } from 'material-ui-confirm';
 
+// apis
+import roomApi from '../../../apis/roomApi';
 // components
 import ECard from '../../ECard';
 import AvatarBadge from '../../AvatarBadge';
 // hooks
-import useModal from '../../../hooks/useModal';
+import useSnackbar from '../../../hooks/useSnackbar';
+// path
+import { PATH_DASHBOARD } from '../../../routes/path';
 
 const propTypes = {
     rooms: PropTypes.array
 };
 
 const RoomList = ({ rooms }) => {
-    const { setModal } = useModal();
-    const handleJoinRoom = doctorId => {
-        setModal({
-            isOpen: true,
-            _id: doctorId,
-            title: 'Join this room?',
-            content: 'Get the number and go to the waiting room after that',
-            type: 'success',
-            caseSubmit: 'save/room'
-        });
+    const confirm = useConfirm();
+    const navigate = useNavigate();
+    const { setSnackbar } = useSnackbar();
+    const handleJoinRoom = async doctorId => {
+        try {
+            await confirm({
+                title: 'Join this room?',
+                content: <Alert severity='info'>Get the number and go to the waiting room after that</Alert>
+            });
+            const res = await roomApi.joinRoom({
+                doctorId
+            });
+            const { status, message } = res;
+            status === 'success' && navigate(PATH_DASHBOARD.processing);
+            setSnackbar({
+                isOpen: true,
+                type: status,
+                message,
+                anchor: 'bottom-center'
+            });
+        } catch (error) {
+
+        }
     };
     return (
         <Grid
@@ -31,7 +50,7 @@ const RoomList = ({ rooms }) => {
         >
             {rooms.map(room => {
                 const { doctor, currentPatient, inQueue } = room;
-                const { _id, name, image, phone, dutyDay, dutyFrom, dutyTo } = doctor;
+                const { _id, name, phone, image, dutyDay, dutyFrom, dutyTo } = doctor;
                 return (
                     <Grid item xs={12} md={4} key={_id}>
                         <ECard
@@ -43,30 +62,38 @@ const RoomList = ({ rooms }) => {
                             }}
                             onClick={() => handleJoinRoom(_id)}
                         >
-                            <Stack sx={{ width: '70%' }}>
-                                <Typography variant='subtitle2'>{name}</Typography>
-                                <Typography variant='caption'>Phone: {phone}</Typography>
+                            <Stack sx={{ width: '65%' }}>
                                 {dutyDay.length !== 0 && (
                                     <Fragment>
-                                        <Typography variant='caption' component='p'>Duty day:</Typography>
+                                        <Typography variant='subtitle2' component='p'>Duty day:</Typography>
                                         <Typography variant='caption'>
                                             {dutyDay.map((day, index) => `${day}${index < dutyDay.length - 1 ? ', ' : ''}`)}
                                         </Typography>
                                     </Fragment>
                                 )}
-                                <Typography variant='caption'>Shift: {dutyFrom} - {dutyTo}</Typography>
-                                {currentPatient && <Typography variant='caption'>Current patient: {currentPatient}</Typography>}
-                                {!currentPatient && <Typography variant='caption'>No patients yet</Typography>}
-                                {inQueue !== 0 && <Typography variant='caption'>In queue: {inQueue}</Typography>}
+                                <Typography variant='caption' sx={{ fontWeight: 'bold' }}>Shift: {dutyFrom} - {dutyTo}</Typography>
+                                {currentPatient && <Typography variant='caption' sx={{ fontWeight: 'bold' }}>Current patient: {currentPatient}</Typography>}
+                                {!currentPatient && <Typography variant='caption' sx={{ fontWeight: 'bold' }}>No patients yet</Typography>}
+                                {inQueue !== 0 && <Typography variant='caption' sx={{ fontWeight: 'bold' }}>In queue: {inQueue}</Typography>}
                             </Stack>
-                            <AvatarBadge
-                                image={image}
-                                status='online'
-                                sx={{
-                                    width: '60px',
-                                    height: '60px'
-                                }}
-                            />
+                            <Stack
+                                spacing={1}
+                                alignItems='center'
+                                sx={{ width: '30%' }}
+                            >
+                                <AvatarBadge
+                                    image={image}
+                                    status='online'
+                                    sx={{
+                                        width: '60px',
+                                        height: '60px'
+                                    }}
+                                />
+                                <Stack sx={{ textAlign: 'center' }}>
+                                    <Typography variant='caption' sx={{ fontWeight: 'bold' }}>{name}</Typography>
+                                    <Typography variant='caption' sx={{ fontWeight: 'bold' }}>{phone}</Typography>
+                                </Stack>
+                            </Stack>
                         </ECard>
                     </Grid>
                 )

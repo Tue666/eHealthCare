@@ -11,7 +11,11 @@ import useSnackbar from '../../../hooks/useSnackbar';
 // utils
 import { patientLoginSchema } from '../../../utils/yupSchema';
 // path
-import { PATH_DASHBOARD, PATH_DOCTOR } from '../../../routes/path';
+import {
+    PATH_DASHBOARD,
+    PATH_DOCTOR,
+    PATH_MEDICINE
+} from '../../../routes/path';
 
 const LoginForm = () => {
     const navigate = useNavigate();
@@ -25,7 +29,21 @@ const LoginForm = () => {
     const handleSubmit = async (values, { setErrors, resetForm }) => {
         try {
             const res = await login(values.code, values.password);
-            const middlePath = res.role === 'Doctor' ? PATH_DOCTOR.patients : PATH_DASHBOARD.services;
+            const { name, role } = res;
+            let middlePath = '';
+            switch (role) {
+                case 'Patient':
+                    middlePath = PATH_DASHBOARD.services
+                    break;
+                case 'Doctor':
+                    middlePath = PATH_DOCTOR.patients
+                    break;
+                case 'Medicine':
+                    middlePath = PATH_MEDICINE.medicines
+                    break;
+                default:
+                    break;
+            }
             const path = state?.from ? state.from : middlePath;
             navigate(path, {
                 replace: true
@@ -33,7 +51,7 @@ const LoginForm = () => {
             setSnackbar({
                 isOpen: true,
                 type: 'success',
-                message: `Welcome back, ${res.name}`,
+                message: `Welcome back, ${name}`,
                 anchor: 'top-center'
             });
         } catch (error) {

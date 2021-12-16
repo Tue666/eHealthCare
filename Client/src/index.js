@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import DateAdapter from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import { ConfirmProvider } from 'material-ui-confirm';
 import { Provider as ReduxProvider } from 'react-redux';
 import { store } from './redux/store';
 
@@ -17,11 +18,13 @@ ReactDOM.render(
     <HelmetProvider>
       <ReduxProvider store={store}>
         <LocalizationProvider dateAdapter={DateAdapter}>
-          <AuthProvider >
-            <BrowserRouter>
-              <App />
-            </BrowserRouter>
-          </AuthProvider>
+          <ConfirmProvider>
+            <AuthProvider >
+              <BrowserRouter>
+                <App />
+              </BrowserRouter>
+            </AuthProvider>
+          </ConfirmProvider>
         </LocalizationProvider>
       </ReduxProvider>
     </HelmetProvider>

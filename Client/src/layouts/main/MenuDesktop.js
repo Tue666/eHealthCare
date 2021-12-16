@@ -3,6 +3,9 @@ import { NavLink as RouterLink, useLocation } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Stack, Link, Button } from '@mui/material';
 
+// path
+import { PATH_AUTH } from '../../routes/path';
+
 const MenuDesktopItem = ({ pathname, isLanding, isOffset, item }) => {
     const { label, path } = item;
     const isActive = pathname === path;
@@ -59,7 +62,7 @@ const MenuDesktop = ({ isLanding, isOffset, menuItem }) => {
             <Button
                 variant='contained'
                 target='_blank'
-                href='/auth/login'
+                href={PATH_AUTH.login}
             >
                 Get started
             </Button>

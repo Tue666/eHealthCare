@@ -36,7 +36,7 @@ const Router = () => {
             path: 'dashboard',
             element: (
                 <PatientGuard>
-                    <DashboardLayout role='Patient' />
+                    <DashboardLayout />
                 </PatientGuard>
             ),
             children: [
@@ -63,7 +63,7 @@ const Router = () => {
             path: 'doctor',
             element: (
                 <DoctorGuard>
-                    <DashboardLayout role='Doctor' />
+                    <DashboardLayout />
                 </DoctorGuard>
             ),
             children: [
@@ -73,6 +73,20 @@ const Router = () => {
                     children: [
                         { path: '', element: <Patients /> },
                         { path: ':patientId', element: <Patient /> }
+                    ]
+                },
+            ]
+        },
+        // Medicine routes
+        {
+            path: 'manage-medicine',
+            element: <DashboardLayout />,
+            children: [
+                { path: '', element: <Navigate to='/manage-medicine/medicines' replace /> },
+                {
+                    path: 'medicines',
+                    children: [
+                        { path: '', element: <Medicines /> }
                     ]
                 },
             ]
@@ -111,3 +125,6 @@ const ExaminedDetail = Loadable(lazy(() => import('../pages/dashboard/examined/E
 // Doctor
 const Patients = Loadable(lazy(() => import('../pages/doctor/patients/Patients')));
 const Patient = Loadable(lazy(() => import('../pages/doctor/patients/Patient')));
+
+// Medicine
+const Medicines = Loadable(lazy(() => import('../pages/medicine/Medicines')));
