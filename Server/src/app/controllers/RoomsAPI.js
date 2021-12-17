@@ -147,7 +147,7 @@ class RoomsAPI {
             await Promise.all(prescription.map(async p => {
                 const { medicineId } = p;
                 const medicine = await Medicine
-                    .findOne({ _id: medicineId });
+                    .findOneWithDeleted({ _id: medicineId });
                 result.push({
                     ...p.toObject(),
                     medicineName: medicine.name,

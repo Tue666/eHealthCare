@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const mongooseDlete = require('mongoose-delete');
 
 const Medicine = new Schema({
     name: {
@@ -17,6 +18,12 @@ const Medicine = new Schema({
     }
 }, {
     timestamps: true
+});
+
+Medicine.plugin(mongooseDlete, {
+    deletedAt: true,
+    deletedBy: true,
+    overrideMethods: true
 });
 
 module.exports = mongoose.model('Medicine', Medicine);

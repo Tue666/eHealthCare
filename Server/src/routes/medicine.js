@@ -3,8 +3,13 @@ const router = express.Router();
 
 // controllers
 const medicinesAPI = require('../app/controllers/MedicinesAPI');
+// middlewares
+const verifyToken = require('../app/middlewares/verifyToken');
 
-router.post('/', medicinesAPI.insertMedicine);
-router.get('/', medicinesAPI.findAll);
+router.delete('/:medicineId', verifyToken, medicinesAPI.deleteById);
+router.patch('/', verifyToken, medicinesAPI.deleteAll);
+router.put('/:medicineId', verifyToken, medicinesAPI.editMedicine);
+router.post('/', verifyToken, medicinesAPI.insertMedicine);
+router.get('/', verifyToken, medicinesAPI.findAll);
 
 module.exports = router;
