@@ -47,7 +47,7 @@ const ExaminedDetail = () => {
                             <DoctorInfor doctor={room.doctor} />
                         </Grid>
                         <Grid item md={12}>
-                            <Prescription prescription={room.prescription} />
+                            <Prescription prescription={room.prescription} insurance={room.insurance} />
                         </Grid>
                     </Grid>
                 )}

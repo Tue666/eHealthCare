@@ -1,5 +1,6 @@
 // models
 const Account = require('../models/Account');
+const Insurance = require('../models/Insurance');
 const Patient = require('../models/Patient');
 const Doctor = require('../models/Doctor');
 const Room = require('../models/Room');
@@ -135,6 +136,15 @@ class RoomsAPI {
                 res.json([]);
                 return;
             }
+            const patient = await Patient
+                .findOne({
+                    _id: room.patientId
+                })
+                .select('insuranceID insuranceTime');
+            const insurance = await Insurance
+                .findOne({
+                    _insuranceId: patient.insuranceID
+                });
             const doctor = await Doctor
                 .findOne({
                     _id: room.doctorId
@@ -156,6 +166,7 @@ class RoomsAPI {
             }));
             res.json({
                 room,
+                insurance,
                 doctor: {
                     name: account.name,
                     phone: account.phone,
@@ -254,7 +265,8 @@ class RoomsAPI {
             const room = await Room
                 .findOne({
                     patientId: patientId,
-                    doctorId: doctor._id
+                    doctorId: doctor._id,
+                    status: 'processing'
                 });
             await Promise.all(prescription.map(async p => {
                 const { _id, amount, time } = p;

@@ -1,10 +1,9 @@
 import { Link as RouterLink } from 'react-router-dom';
-import { Link, Stack, Typography } from '@mui/material';
+import { Link, Stack, Typography, Box, Divider } from '@mui/material';
 
 // components
 import Page from '../../components/Page';
 import Logo from '../../components/Logo';
-import AuthSocial from '../../components/authentication/AuthSocial';
 import { LoginForm } from '../../components/authentication/login';
 // path
 import { PATH_AUTH } from '../../routes/path';
@@ -19,7 +18,26 @@ const Login = () => (
         </Stack>
         <Logo sx={{ my: 5 }}>Sign in to E-Health Care</Logo>
         <Typography variant='body1'>Enter your details below.</Typography>
-        <AuthSocial />
+        <Stack
+            direction='row'
+            alignItems='center'
+            m={1}
+        >
+            <Box
+                component='img'
+                src='https://printgo.vn/uploads/media/790919/tao-ma-qr-code-san-pham-1_1620927223.jpg'
+                alt='qr-code'
+                sx={{
+                    width: '60px',
+                    height: '60px'
+                }}
+            />
+        </Stack>
+        <Divider sx={{ my: 3 }}>
+            <Typography variant="body2" sx={{ color: 'gray' }}>
+                OR
+            </Typography>
+        </Divider>
         <LoginForm />
     </Page>
 );

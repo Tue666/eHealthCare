@@ -62,7 +62,7 @@ const RoomList = ({ rooms }) => {
                             }}
                             onClick={() => handleJoinRoom(_id)}
                         >
-                            <Stack sx={{ width: '65%' }}>
+                            <Stack sx={{ width: '60%' }}>
                                 {dutyDay.length !== 0 && (
                                     <Fragment>
                                         <Typography variant='subtitle2' component='p'>Duty day:</Typography>
@@ -79,7 +79,7 @@ const RoomList = ({ rooms }) => {
                             <Stack
                                 spacing={1}
                                 alignItems='center'
-                                sx={{ width: '30%' }}
+                                sx={{ width: '35%' }}
                             >
                                 <AvatarBadge
                                     image={image}
